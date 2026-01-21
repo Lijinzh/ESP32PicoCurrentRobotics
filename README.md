@@ -191,16 +191,14 @@ ESP32PicoCurrentRobotics/
 
 ## 🛠️ 故障排查
 
-### Modbus 编码器问题
+### ESP-NOW 通信问题
 
 #### 通信失败（LED显示红色）
-1. 检查RS485接线是否正确
-2. 确认编码器波特率为115200
-3. 验证编码器Modbus地址与代码中配置一致
-4. 检查RS485总线终端电阻
-:FF:FF:FF）
 - 解决：按照[ESP-NOW使用说明](test/ESP-NOW使用说明.md)正确配置MAC地址
+
 ## 🛠️ 故障排查
+
+### Modbus 编码器问题
 
 ### 通信失败（LED显示红色）
 
