@@ -88,6 +88,27 @@ pio run --target upload
 ```bash
 # 使用ESP-NOW通信代码
 cp test/espnow_communication.cpp src/main.cpp
+# 修改 DEVICE_1 宏定义和对方MAC地址后上传
+pio run --target upload
+```
+
+详细的ESP-NOW配置说明请查看：[test/ESP-NOW使用说明.md](test/ESP-NOW使用说明.md)
+
+### 编译与上传
+
+```bash
+# 编译项目
+pio run
+
+# 上传到开发板
+pio run --target upload
+
+# 打开串口监视器（115200波特率）
+pio device monitor
+```
+
+### 配置说明
+
 #### Modbus 编码器配置
 
 在 `test/encoder_fast_batch_read_backup.cpp` 中可以修改以下参数：
@@ -115,28 +136,7 @@ if (millis() - last_output_time >= 10) {
 #define DEVICE_1  1
 
 // 对方设备的MAC地址
-uint8_t peerMAC[] = {0xF0, 0x24, 0xF9, 0xB5, 0x90, 0x08};io run --target upload
-
-# 打开串口监视器（115200波特率）
-pio device monitor
-```
-
-### 配置说明
-
-在 `src/main.cpp` 中可以修改以下参数：
-
-```cpp
-// 编码器数量
-#define NUM_ENCODERS 4
-
-// 编码器Modbus地址
-const uint8_t ENCODER_IDS[NUM_ENCODERS] = {1, 2, 3, 5};
-
-// 数据输出间隔（毫秒）
-// 当前为10ms，即100Hz输出频率
-if (millis() - last_output_time >= 10) {
-    // ...
-}
+uint8_t peerMAC[] = {0xF0, 0x24, 0xF9, 0xB5, 0x90, 0x08};
 ```
 
 ## 📊 数据格式
@@ -156,7 +156,22 @@ if (millis() - last_output_time >= 10) {
 ### LED状态指示
 
 - 🟠 **橙色**: 系统初始化中
-- 🔵� 项目结构
+- 🔵 **蓝色**: 系统就绪
+- 🟢 **绿色**: 所有编码器通信正常 / ESP-NOW发送成功
+- 🔴 **红色**: 至少一个编码器通信异常 / ESP-NOW发送失败
+- 🟣 **紫色**: ESP-NOW仅接收模式（对方MAC未配置）
+
+## ⚡ 性能优化
+
+本项目采用了多项优化措施以实现最高通信频率：
+
+1. **预生成Modbus帧**: 启动时生成所有请求帧，避免运行时开销
+2. **阻塞式读取**: 使用紧凑的发送-接收循环，消除异步等待延迟
+3. **最小化超时**: Serial超时设置为5ms，快速检测通信失败
+4. **硬件加速**: CPU 240MHz + QIO Flash模式
+5. **高速烧录**: 2Mbps上传速度，快速迭代开发
+
+## 📁 项目结构
 
 ```
 ESP32PicoCurrentRobotics/
@@ -183,21 +198,7 @@ ESP32PicoCurrentRobotics/
 2. 确认编码器波特率为115200
 3. 验证编码器Modbus地址与代码中配置一致
 4. 检查RS485总线终端电阻
-
-#### 数据更新频率低
-1. 减少编码器数量
-2. 调整数据输出间隔
-3. 检查串口是否有大量输出（降低Serial输出频率）
-
-### ESP-NOW 通信问题
-
-#### 发送失败
-1. 检查对方MAC地址是否正确填写
-2. 确认两个ESP32都在运行ESP-NOW程序
-3. 将设备靠近测试（有效范围100-200米）
-
-#### LED显示紫色
-- 原因：对方MAC地址未配置（默认值 FF:FF:FF:FF:FF:FF）
+:FF:FF:FF）
 - 解决：按照[ESP-NOW使用说明](test/ESP-NOW使用说明.md)正确配置MAC地址
 ## 🛠️ 故障排查
 
