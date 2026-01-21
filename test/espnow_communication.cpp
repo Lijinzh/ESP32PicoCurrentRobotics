@@ -16,7 +16,7 @@
 
 // ==================== 设备配置 ====================
 // 修改这个值来区分两个设备：设备1设为1，设备2设为0
-#define DEVICE_1 2 // 设备1
+#define DEVICE_1 1 // 设备1
 
 // ==================== 引脚配置 ====================
 #define WS2812_PIN 26
@@ -38,11 +38,11 @@ CRGB leds[NUM_LEDS];
 // 对方设备的MAC地址（需要根据实际情况修改）
 #if DEVICE_1
 // 设备1的配置：需要填写设备2的MAC地址
-uint8_t peerMAC[] = {0x10, 0x97, 0xBD, 0x12, 0xED, 0xCC}; // 替换为设备2的实际MAC
+uint8_t peerMAC[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // 替换为设备2的实际MAC
 const char *deviceName = "Device 1";
 #else
 // 设备2的配置：需要填写设备1的MAC地址
-uint8_t peerMAC[] = {0xF0, 0x24, 0xF9, 0xB5, 0x90, 0x08}; // 替换为设备1的实际MAC
+uint8_t peerMAC[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // 替换为设备1的实际MAC
 const char *deviceName = "Device 2";
 #endif
 
