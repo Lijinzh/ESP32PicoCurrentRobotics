@@ -1,16 +1,19 @@
 # ESP32 Pico 机器人通信系统
 
-基于ESP32-PICO-D4的多功能机器人通信系统，包含高性能Modbus RTU多编码器数据采集和ESP-NOW无线通信功能。
+基于ESP32-PICO-D4的多功能机器人通信系统，包含高性能Modbus RTU多编码器数据采集、ESP-NOW无线通信和HiPNUC IMU姿态传感器通信功能。
 
 ## 📋 项目简介
 
-本项目提供了两种核心功能模块：
+本项目提供了三种核心功能模块：
 
 ### 1. Modbus RTU 编码器数据采集
 通过RS485总线与多个Modbus编码器进行高速通信，优化了数据采集流程，绕过了传统库的开销，通过紧凑的发送-接收循环实现了最高频率的数据更新。
 
 ### 2. ESP-NOW 无线通信
 实现两个ESP32设备之间的点对点无线通信，无需路由器即可实现低延迟、高可靠的数据传输，适用于机器人编队协作等场景。
+
+### 3. HiPNUC IMU 姿态传感器通信
+使用HiPNUC协议与超核电子IMU/INS传感器进行串口通信，实时获取姿态角、加速度、角速度、GPS位置等数据，支持0x91/0x81/0x83多种数据包格式。
 
 ## ✨ 主要特性
 
@@ -25,6 +28,12 @@
 - ⚡ **低延迟**: 典型延迟<10ms，适合实时控制
 - 🔄 **双向传输**: 支持双向数据收发
 - 📦 **灵活数据包**: 支持传输文本、传感器数据、时间戳等
+
+### HiPNUC IMU 通信
+- 🎯 **多协议支持**: 支持0x91(IMU)、0x81(INS)、0x83(灵活)数据包
+- 📏 **高精度姿态**: 实时获取Roll/Pitch/Yaw姿态角
+- 🧭 **多传感器融合**: 加速度计、陀螺仪、磁力计、GPS数据
+- 📊 **实时监测**: FPS显示、JSON格式输出、串口交互命令
 
 ### 通用特性
 - 💡 **状态指示**: WS2812 LED实时显示运行状态
@@ -45,6 +54,8 @@
 | RS485 RX | GPIO 32 | 接收数据 |
 | RS485 TX | GPIO 33 | 发送数据 |
 | RS485 DE/RE | GPIO 25 | 收发控制 |
+| IMU RX | GPIO 16 | IMU数据接收 |
+| IMU TX | GPIO 17 | IMU配置发送 |
 | WS2812 LED | GPIO 26 | 状态指示灯 |
 | 蜂鸣器 | GPIO 2 | 声音提示 |
 
@@ -92,6 +103,15 @@ cp test/espnow_communication.cpp src/main.cpp
 pio run --target upload
 ```
 
+#### 模式3: HiPNUC IMU 通信
+```bash
+# 使用IMU通信代码
+cp test/hipnuc_imu_reader.cpp src/main.cpp
+pio run --target upload
+```
+
+详细的IMU配置说明请查看：[test/HiPNUC-IMU使用说明.md](test/HiPNUC-IMU使用说明.md)
+
 详细的ESP-NOW配置说明请查看：[test/ESP-NOW使用说明.md](test/ESP-NOW使用说明.md)
 
 ### 编译与上传
@@ -130,7 +150,23 @@ if (millis() - last_output_time >= 10) {
 #### ESP-NOW 配置
 
 在 `test/espnow_communication.cpp` 中修改设备角色和对方MAC地址：
+## HiPNUC IMU 配置
 
+在 `test/hipnuc_imu_reader.cpp` 中可以修改串口引脚和波特率：
+
+```cpp
+// IMU串口引脚
+#define IMU_RX_PIN 16      // ESP32接收IMU数据
+#define IMU_TX_PIN 17      // ESP32发送到IMU
+
+// IMU波特率
+#define IMU_BAUDRATE 115200
+
+// 显示频率
+const int DISPLAY_INTERVAL = 100;  // 100ms = 10Hz
+```
+
+##
 ```cpp
 // 设备角色：设备1设为1，设备2设为0
 #define DEVICE_1  1
@@ -160,38 +196,59 @@ uint8_t peerMAC[] = {0xF0, 0x24, 0xF9, 0xB5, 0x90, 0x08};
 - 🟢 **绿色**: 所有编码器通信正常 / ESP-NOW发送成功
 - 🔴 **红色**: 至少一个编码器通信异常 / ESP-NOW发送失败
 - 🟣 **紫色**: ESP-NOW仅接收模式（对方MAC未配置）
-
-## ⚡ 性能优化
-
-本项目采用了多项优化措施以实现最高通信频率：
-
-1. **预生成Modbus帧**: 启动时生成所有请求帧，避免运行时开销
-2. **阻塞式读取**: 使用紧凑的发送-接收循环，消除异步等待延迟
-3. **最小化超时**: Serial超时设置为5ms，快速检测通信失败
-4. **硬件加速**: CPU 240MHz + QIO Flash模式
-5. **高速烧录**: 2Mbps上传速度，快速迭代开发
-
-## 📁 项目结构
-
-```
-ESP32PicoCurrentRobotics/
-├── src/
-│   └── main.cpp                              # 当前运行的主程序
+├── main.cpp                              # 当前运行的主程序
+│   └── hipnuc_dec.c                          # HiPNUC协议解码库
+├── include/
+│   └── hipnuc_dec.h                          # HiPNUC协议头文件
 ├── test/
 │   ├── encoder_fast_batch_read_backup.cpp    # 编码器批量快速读取模式
 │   ├── encoder_polling_read_backup.cpp       # 编码器轮询读取模式
 │   ├── espnow_communication.cpp              # ESP-NOW双向通信代码
+│   ├── hipnuc_imu_reader.cpp                 # HiPNUC IMU通信代码
 │   ├── ESP-NOW使用说明.md                     # ESP-NOW详细使用指南
+│   ├── HiPNUC-IMU使用说明.md                  # IMU通信详细说明
 │   └── README                                # test文件夹说明
 ├── platformio.ini                            # PlatformIO配置文件
 ├── README.md                                 # 本文件
 └── LICENSE                                   # MIT许可证
+## Modbus 编码器问题
 
-```
+#### 通信失败（LED显示红色）
+1. 检查RS485接线是否正确
+2. 确认编码器波特率为115200
+3. 验证编码器Modbus地址与代码中配置一致
+4. 检查RS485总线终端电阻
 
-## 🛠️ 故障排查
+#### 数据更新频率低
+1. 减少编码器数量
+2. 调整数据输出间隔
+3. 检查串口是否有大量输出（降低Serial输出频率）
 
 ### ESP-NOW 通信问题
+
+#### 发送失败
+1. 检查对方MAC地址是否正确填写
+2. 确认两个ESP32都在运行ESP-NOW程序
+3. 将设备靠近测试（有效范围100-200米）
+
+#### LED显示紫色
+- 原因：对方MAC地址未配置（默认值 FF:FF:FF:FF:FF:FF）
+- 解决：按照[ESP-NOW使用说明](test/ESP-NOW使用说明.md)正确配置MAC地址
+
+### HiPNUC IMU 问题
+
+#### 无数据输出（FPS为0）
+1. 检查IMU硬件连接和供电
+2. 确认IMU波特率为115200
+3. 验证TX/RX引脚连接正确（IMU TX → GPIO16, IMU RX → GPIO17）
+4. 使用IMU配置软件确认输出已开启
+
+#### 数据解析错误
+1. 检查接线是否松动
+2. 缩短连接线长度
+3. 添加电源滤波电容
+
+详细故障排查请参考各模块的使用说明文档。
 
 #### 通信失败（LED显示红色）
 - 解决：按照[ESP-NOW使用说明](test/ESP-NOW使用说明.md)正确配置MAC地址
