@@ -8,6 +8,10 @@
 - **espnow_communication.cpp** - ESP-NOW双向通信完整代码
 - **ESP-NOW使用说明.md** - 详细的使用文档和配置指南
 
+### HiPNUC IMU 通信
+- **hipnuc_imu_reader.cpp** - 超核电子IMU数据读取代码
+- **HiPNUC-IMU使用说明.md** - IMU通信详细说明文档
+
 ### 编码器读取备份
 - **encoder_fast_batch_read_backup.cpp** - 编码器批量快速读取模式（优化版）
 - **encoder_polling_read_backup.cpp** - 编码器轮询读取模式
@@ -16,12 +20,14 @@
 
 ### 测试ESP-NOW通信
 ```bash
-# 方法1：临时替换main.cpp
 cp test/espnow_communication.cpp src/main.cpp
 pio run --target upload
+```
 
-# 方法2：使用完整路径编译
-pio run --target upload -e pico32
+### 测试IMU通信
+```bash
+cp test/hipnuc_imu_reader.cpp src/main.cpp
+pio run --target upload
 ```
 
 ### 恢复原始编码器代码
