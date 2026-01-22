@@ -1,19 +1,17 @@
 /**
  * @file hipnuc_imu_reader.cpp
- * @brief ESP32与超核电子IMU通信示例（软串口版本）
+ * @brief ESP32与超核电子IMU通信示例
  * @note 使用HiPNUC协议解码库读取IMU/INS数据
- * @note 使用软串口以支持多个IMU同时接入（最多4个）
  *
  * 硬件连接：
- * - IMU TX -> ESP32 GPIO 16 (软串口RX)
- * - IMU RX -> ESP32 GPIO 17 (软串口TX)
+ * - IMU TX -> ESP32 GPIO 16 (RX)
+ * - IMU RX -> ESP32 GPIO 17 (TX)
  * - IMU GND -> ESP32 GND
  * - IMU VCC -> ESP32 3.3V/5V (根据IMU型号)
  */
 
 #include <Arduino.h>
 #include <FastLED.h>
-#include <SoftwareSerial.h>
 #include "hipnuc_dec.h"
 
 // ==================== 引脚配置 ====================
@@ -28,7 +26,6 @@
 
 // ==================== 全局变量 ====================
 CRGB leds[NUM_LEDS];
-SoftwareSerial imuSerial(IMU_RX_PIN, IMU_TX_PIN); // 软串口对象
 hipnuc_raw_t hipnuc_raw;
 
 // 数据统计
@@ -270,9 +267,8 @@ void setup()
     Serial.begin(115200);
     Serial.println("\n\n");
 
-    // 初始化IMU软串口
-    imuSerial.begin(IMU_BAUDRATE);
-    Serial.printf("软串口初始化: RX=%d, TX=%d, Baud=%d\n", IMU_RX_PIN, IMU_TX_PIN, IMU_BAUDRATE);
+    // 初始化IMU串口（Serial2）
+    Serial2.begin(IMU_BAUDRATE, SERIAL_8N1, IMU_RX_PIN, IMU_TX_PIN);
 
     // 初始化LED和蜂鸣器
     pinMode(BUZZER_PIN, OUTPUT);
@@ -300,9 +296,9 @@ void loop()
     unsigned long now = millis();
 
     // 读取并解码IMU数据
-    while (imuSerial.available())
+    while (Serial2.available())
     {
-        uint8_t data = imuSerial.read();
+        uint8_t data = Serial2.read();
 
         // 输入解码器
         if (hipnuc_input(&hipnuc_raw, data) > 0)
