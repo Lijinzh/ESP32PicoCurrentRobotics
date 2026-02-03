@@ -42,6 +42,13 @@
    HAL 设置
  *====================*/
 
+/*=======================
+   加速和优化
+ *=======================*/
+
+/* 禁用 ARM 特定加速 (ESP32 使用 Xtensa 架构) */
+#define LV_USE_DRAW_SW_ASM LV_DRAW_SW_ASM_NONE
+
 /* 默认显示刷新周期 (ms) */
 #define LV_DISP_DEF_REFR_PERIOD 30
 
@@ -195,14 +202,7 @@
 #define LV_USE_LOG 1
 #if LV_USE_LOG
 #define LV_LOG_LEVEL LV_LOG_LEVEL_WARN
-#define LV_LOG_PRINTF 1
-
-/* 使用 Serial.print 输出日志 */
-#define LV_LOG_TRACE(msg) Serial.println("[LVGL-TRACE] " msg)
-#define LV_LOG_INFO(msg) Serial.println("[LVGL-INFO] " msg)
-#define LV_LOG_WARN(msg) Serial.println("[LVGL-WARN] " msg)
-#define LV_LOG_ERROR(msg) Serial.println("[LVGL-ERROR] " msg)
-#define LV_LOG_USER(msg) Serial.println("[LVGL-USER] " msg)
+#define LV_LOG_PRINTF 0
 #endif
 
 /* 启用断言检查 (调试用) */

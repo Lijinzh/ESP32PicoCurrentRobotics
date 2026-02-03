@@ -98,6 +98,7 @@
 | 📡 **多协议** | Modbus RTU、ESP-NOW、HiPNUC、I2C、SPI |
 | 🎨 **现代 UI** | LVGL 图形库，60 FPS 流畅动画 |
 | 💾 **数据存储** | SD 卡支持，FAT32 文件系统 |
+| 🎨 **图形界面** | LVGL v9.4 UI 框架，流畅动画和丰富组件 |
 | 🔌 **易扩展** | GPIO 扩展器，支持 16 路 I/O 和 SPI CS |
 | 🔊 **人机交互** | 蜂鸣器音效、RGB LED 状态、串口命令 |
 | 📚 **完整文档** | 详细中文使用指南和示例代码 |
@@ -197,7 +198,7 @@ lib_deps =
     
     # 显示与 UI
     bodmer/TFT_eSPI @ ^2.5.43              # TFT 显示驱动
-    lvgl/lvgl @ ^9.2.0                      # 图形界面库
+    lvgl/lvgl @ ^9.4.0                      # 图形界面库（专业级 GUI）
     
     # 外设控制
     fastled/FastLED @ ^3.10.3              # WS2812B LED 控制
@@ -320,7 +321,7 @@ platformio run --target upload && platformio device monitor
 
 | 模块 | 预期现象 | 串口输出 |
 |------|----------|----------|
-| LVGL Demo | RGB LED 显示，屏幕显示 UI | `LVGL Initialization Complete!` |
+| LVGL Demo | TFT 屏幕显示丰富 UI 界面 | `LVGL Initialization Complete!` |
 | Modbus 编码器 | LED 绿色（正常）/红色（异常）| CSV 格式角度数据流 |
 | ESP-NOW | LED 绿色（发送成功）| `Data sent, Delivery: Success` |
 | IMU 传感器 | LED 蓝色闪烁 | `FPS: 100, Roll: xx, Pitch: xx` |
@@ -394,10 +395,11 @@ test/
 
 | 指标 | 数值 | 说明 |
 |------|------|------|
+| **LVGL 渲染帧率** | 30-60 FPS | 流畅动画和交互 |
 | **IMU 采集频率** | 100 Hz | 硬件串口稳定输出 |
 | **Modbus 更新率** | 100+ Hz | 4 个编码器批量读取 |
 | **ESP-NOW 延迟** | <10 ms | 点对点传输 |
-| **LVGL 帧率** | 30-60 FPS | 根据缓冲区配置 |
+| **LVGL 渲染帧率** | 30-60 FPS | 流畅动画和交互 |
 | **SD 卡写入速度** | 500+ KB/s | SdFat 库优化 |
 | **GPIO 扩展** | 16 路 | PCA9555 I2C 控制 |
 | **内存占用** | <200 KB | LVGL + 双缓冲 |
