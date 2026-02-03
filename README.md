@@ -118,30 +118,46 @@
 
 | 功能模块 | 引脚 | 方向 | 说明 |
 |----------|------|------|------|
-| **RS485 通信** ||||
-| RS485 RX | GPIO 32 | IN | Modbus 数据接收 |
-| RS485 TX | GPIO 33 | OUT | Modbus 数据发送 |
-| RS485 DE/RE | GPIO 25 | OUT | 收发控制（高=发送，低=接收）|
-| **IMU 传感器** ||||
-| IMU RX | GPIO 16 | IN | HiPNUC 数据接收（Serial2）|
-| IMU TX | GPIO 17 | OUT | HiPNUC 配置发送（Serial2）|
+| **RS485 通信 - 第一路** ||||
+| RS485_1 RX | GPIO 32 | IN | 第一路 Modbus 数据接收 |
+| RS485_1 TX | GPIO 33 | OUT | 第一路 Modbus 数据发送 |
+| RS485_1 DE/RE | GPIO 25 | OUT | 第一路收发控制 (DIRECTION1) |
+| **RS485 通信 - 第二路** ||||
+| RS485_2 RX | GPIO 26 | IN | 第二路 Modbus 数据接收 |
+| RS485_2 TX | GPIO 27 | OUT | 第二路 Modbus 数据发送 |
+| RS485_2 DE/RE | GPIO 14 | OUT | 第二路收发控制 (DIRECTION2) |
+| **SPI 总线（共享）** ||||
+| SPI MISO | GPIO 19 | IN | SPI 主机输入 |
+| SPI MOSI | GPIO 23 | OUT | SPI 主机输出 |
+| SPI SCLK | GPIO 18 | OUT | SPI 时钟 |
+| SPI CS1 | GPIO 5 | OUT | LCD 片选 |
+| SPI CS2 | GPIO 10 | OUT | SD 卡片选 |
 | **I2C 总线** ||||
-| SDA | GPIO 21 | INOUT | PCA9555 数据线 |
-| SCL | GPIO 22 | OUT | PCA9555 时钟线 |
-| **SPI 总线** ||||
-| MISO | GPIO 19 | IN | SPI 主机输入 |
-| MOSI | GPIO 23 | OUT | SPI 主机输出 |
-| SCK | GPIO 18 | OUT | SPI 时钟 |
-| CS (SD Card) | GPIO 5 | OUT | SD 卡片选 |
-| **TFT 显示** ||||
-| TFT CS | GPIO 5 | OUT | 显示屏片选 |
-| TFT DC | GPIO 2 | OUT | 数据/命令切换 |
-| TFT RST | GPIO 4 | OUT | 显示屏复位 |
+| I2C SDA | GPIO 22 | INOUT | I2C 数据线 |
+| I2C SCL | GPIO 21 | OUT | I2C 时钟线 |
+| **LCD 显示屏** ||||
+| LCD CS | GPIO 5 | OUT | 片选 (SPI_CS1) |
+| LCD RS | GPIO 13 | OUT | 数据/命令切换 |
+| LCD BLK | GPIO 4 | OUT | 背光控制 |
+| LCD SDA | SPI_MOSI | - | 数据线（共享 SPI MOSI）|
+| LCD SCL | SPI_SCLK | - | 时钟线（共享 SPI SCLK）|
+| LCD RESET | ESP_RST | - | 复位引脚 |
+| **SD 卡模块** ||||
+| SD CS | GPIO 10 | OUT | 片选 (SPI_CS2) |
+| SD DET | GPIO 9 | IN | 卡检测引脚 |
+| **波轮开关（3按键）** ||||
+| 波轮 1 | GPIO 38 | IN | 波轮按键 1 |
+| 波轮 2 | GPIO 36 | IN | 波轮按键 2 |
+| 波轮 SWITCH | GPIO 37 | IN | 波轮开关按键 |
+| **外部按键（下拉触发）** ||||
+| 外部按键 1 | GPIO 35 | IN | 按下时下拉到地 |
+| 外部按键 2 | GPIO 34 | IN | 按下时下拉到地 |
 | **外设控制** ||||
-| WS2812B LED | GPIO 26 | OUT | RGB 状态指示灯 |
-| 蜂鸣器 | GPIO 27 | OUT | PWM 音频输出 |
-| 按键 1 | GPIO 0 | IN | 功能按键（上拉）|
-| 按键 2 | GPIO 35 | IN | 功能按键（上拉）|
+| WS2812B LED | GPIO 15 | OUT | RGB 状态指示灯 |
+| 蜂鸣器 | GPIO 12 | OUT | PWM 音频输出 |
+| LED | GPIO 2 | OUT | 普通 LED 指示灯 |
+| **ADC 采集** ||||
+| 电池电压 | GPIO 39 | IN | ADC 电池电压检测 (ADC_VBAT) |
 
 ### 外部设备配置
 
