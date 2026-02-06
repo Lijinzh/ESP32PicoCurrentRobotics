@@ -23,11 +23,17 @@
 #define RS485_1_DE_PIN 25                    // 第一路收发控制 (DE/RE)
 #define RS485_1_DIRECTION_PIN RS485_1_DE_PIN // 别名
 
-// 第二路 RS485 通信
-#define RS485_2_RX_PIN 26                    // 第二路 Modbus 数据接收
-#define RS485_2_TX_PIN 27                    // 第二路 Modbus 数据发送
-#define RS485_2_DE_PIN 14                    // 第二路收发控制 (DE/RE)
+// 第二路 RS485 通信（超核电子HiPNUC IMU）
+#define RS485_2_RX_PIN 26                    // IMU 数据接收
+#define RS485_2_TX_PIN 27                    // IMU 数据发送
+#define RS485_2_DE_PIN 14                    // IMU 收发控制 (DE/RE)
 #define RS485_2_DIRECTION_PIN RS485_2_DE_PIN // 别名
+
+// IMU 引脚别名（方便代码阅读）
+#define IMU_RX_PIN RS485_2_RX_PIN
+#define IMU_TX_PIN RS485_2_TX_PIN
+#define IMU_DE_PIN RS485_2_DE_PIN
+#define IMU_BAUDRATE 115200 // IMU 通信波特率
 
 /* ====================================================================================
  *  SPI 总线引脚定义（多设备共享）
